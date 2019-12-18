@@ -6,4 +6,6 @@ Campaign contributions are not always straightforward. Depending on the origin, 
 
 Individual donations that do not meet this detailed reporting criteria (i.e. contributions < $200.00) can be bundled together as unitemized contributions, which are reported as a single lump sum with no data beyond the amount. The contribution receiving committee has the same detailed information about the contributors, but is not required to report them. While this can make it difficult to accurately quantify a donation profile for each candidate, it is certainly best practice for campaigns to itemize and give detailed reports for all contributions, regardless of whether it is required. Most relevant campaigns are moving in this direction of reporting all individual contributions.
 
-This project aims to take a wholesome look at donations
+This project aims to take a wholesome look at campaign contributions across the country as distributed by zip code. Zip code is a finer observation scale than state or congressional level, which is the intent. The idea, at least initially, is to break down contributions by each campaign independently, so as to give a complete picture of where each candidate is financially supported across the country. This information, coupled with the number of contributions in each area, can give insight into who and where supports each candidate financially.
+
+While lump sum totals of unitemized individual contributions exist, it will be impossible to 
