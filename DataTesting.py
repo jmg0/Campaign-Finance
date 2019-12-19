@@ -9,6 +9,19 @@ geocode_result = gmaps.geocode('9630 1.5 Mile Road, East Leroy, MI 49051')
 print(geocode_result)
 
 
+
+
+# QUOTA LIMIT OF 0 HAS BEEN SET FOR GOOGLE ACCOUNT MAKE SURE TO UNDO THAT AT
+# https://console.cloud.google.com/apis/api/geocoding_backend/quotas?project=my-project-1576761556969&supportedpurview=project
+# BEFORE RUNNING ANYTHING
+
+
+
+
+
+
+
+
 # fname = './zipcodeGeoJSON/ri_rhode_island_zip_codes_geo.min.json'
 # fhand = open(fname, 'r+')
 #
