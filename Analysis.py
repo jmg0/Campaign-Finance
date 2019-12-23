@@ -58,14 +58,27 @@ def candidate_database_populate(cursor, candidate_name):
         start += 1
     return
 
-# def candidate_database_compress(cursor, candidate_name):
-#     contributor_map = dict()
-#     relation_name = candidate_name + '_Contributions'
-#     compressed_relation_name = candidate_name + '_Contributions_compressed'
-#
-#     cursor.execute('SELECT * FROM ' + relation_name)
-#     for row in cursor:
+def candidate_database_compress(cursor, candidate_name):
+    contributor_map = dict()
+    relation_name = candidate_name + '_Contributions'
+    compressed_relation_name = candidate_name + '_Contributions_compressed'
 
+    cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
+    try:
+        row = cursor.fetchone()
+        if row is None:
+            max_contributor_id = 0
+        else:
+            max_contributor_id = row[0]
+    except:
+        max_contributor_id = 0
+
+
+    for contributor_id in range(max_contributor_id):
+        contributor_map[contributor_id] = 0
+        cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id+1))
+        for row in cursor:
+            contributor_map[contributor_id] += row[0]
 
 
 

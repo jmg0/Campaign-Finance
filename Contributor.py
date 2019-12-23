@@ -5,5 +5,5 @@ class Contributor:
         self.name = name
         self.address = address
         self.contribution_total = 0
-        self.num_contributions = 0 
+        self.num_contributions = 0
 
