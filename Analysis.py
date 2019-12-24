@@ -61,7 +61,6 @@ def candidate_database_populate(cursor, candidate_name):
 def candidate_database_compress(cursor, candidate_name):
     contributor_map = dict()
     relation_name = candidate_name + '_Contributions'
-    compressed_relation_name = candidate_name + '_Contributions_compressed'
 
     cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
     try:
@@ -73,25 +72,45 @@ def candidate_database_compress(cursor, candidate_name):
     except:
         max_contributor_id = 0
 
-
     for contributor_id in range(max_contributor_id):
-        contributor_map[contributor_id] = 0
-        cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id+1))
+        contributor_id += 1
+        contribution_total = 0
+        num_contributions = 0
+        cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
         for row in cursor:
-            contributor_map[contributor_id] += row[0]
+            contribution_total += row[0]
+            num_contributions += 1
+        contributor_map[contributor_id] = [contribution_total, num_contributions]
+    create_compressed_relation(cursor, candidate_name, contributor_map)
+    return
 
 
+def create_compressed_relation(cursor, candidate_name, contributor_map):
+    compressed_relation_name = candidate_name + '_Contributions_compressed'
+    cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
+                            (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
+    for contributor_id,contribution_info in contributor_map.items():
+        cursor.execute('''INSERT OR IGNORE INTO''' + compressed_relation_name + '''
+                        (Contributor_id, Contribution, Num_Contributions) VALUES
+                        ( ?, ?, ? )''', (contributor_id, contribution_info[0], contribution_info[1]) )
+    return
 
 
 def main():
     database_name = 'raw_contribution_data.sqlite'
     connector = sqlite3.connect(database_name)
 
-
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
+
     for candidate in candidate_names:
         cursor = connector.cursor()
         candidate_database_populate(cursor, candidate)
+        connector.commit()
+        cursor.close()
+
+    for candidate in candidate_names:
+        cursor = connector.cursor()
+        candidate_database_compress(cursor, candidate)
         connector.commit()
         cursor.close()
 
