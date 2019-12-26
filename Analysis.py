@@ -90,9 +90,10 @@ def create_compressed_relation(cursor, candidate_name, contributor_map):
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
                             (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
     for contributor_id,contribution_info in contributor_map.items():
-        cursor.execute('''INSERT OR IGNORE INTO''' + compressed_relation_name + '''
-                        (Contributor_id, Contribution, Num_Contributions) VALUES
-                        ( ?, ?, ? )''', (contributor_id, contribution_info[0], contribution_info[1]) )
+        id = contributor_id
+        total_conts = contribution_info[0]
+        num_conts = contribution_info[1]
+        cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name + ' (Contributor_id, Contribution, Num_Contributions) VALUES ( ?, ?, ? )', ( id, total_conts, num_conts))
     return
 
 
