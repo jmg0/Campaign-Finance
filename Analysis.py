@@ -19,7 +19,7 @@ def arrange_dataframe(dataframe):
     return [contributor_names, contributor_address, contributor_contribution, contributor_date, contributor_occupation]
 
 
-def candidate_database_populate(cursor, candidate_name):
+def candidate_database_populate(connector, cursor, candidate_name):
     fname = './Finance Data/' + candidate_name + '/' + candidate_name + '_raw_contribution_data.csv'
     dataframe = panda.read_csv(fname)
     contributor_info = arrange_dataframe(dataframe)
@@ -59,6 +59,8 @@ def candidate_database_populate(cursor, candidate_name):
                     (Contributor_id, id, Name, Address, Contribution, Date, Occupation) VALUES
                     ( ?, ?, ?, ?, ?, ?, ?)''', (contributor_id, start, contributor_info[0][i], contributor_info[1][i], float(contributor_info[2][i]), contributor_info[3][i], contributor_info[4][i]) )
         start += 1
+        if i % 10 == 0:
+            connector.commit()
     return
 
 def candidate_database_compress(connector, cursor, candidate_name):
@@ -127,7 +129,7 @@ def main():
 
     for candidate in candidate_names:
         cursor = connector.cursor()
-        candidate_database_populate(cursor, candidate)
+        candidate_database_populate(connector, cursor, candidate)
         connector.commit()
         cursor.close()
 

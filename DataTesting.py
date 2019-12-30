@@ -3,9 +3,13 @@ import googlemaps
 from datetime import datetime
 import geocoder
 import re
+start = 5
+x = 10
+for i in range(start, x):
+    print(i)
 
-g = geocoder.osm('SPOONER, WI 54801')
-print(g.latlng) # returns [lat, lng] [40.7127281, -74.0060152]
+# g = geocoder.osm('SPOONER, WI 54801')
+# print(g.latlng) # returns [lat, lng] [40.7127281, -74.0060152]
 # g = geocoder.geonames('New York City')
 # print(g.latlng)
 
