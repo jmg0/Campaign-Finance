@@ -44,7 +44,7 @@ def candidate_database_populate(connector, cursor, candidate_name):
         start = 0
 
     contributor_id = 0
-    for i in range(len(contributor_info[0])):
+    for i in range(start, len(contributor_info[0])):
         cursor.execute('SELECT * FROM ' + relation_name + ' WHERE Name=? AND Address=?', (contributor_info[0][i], contributor_info[1][i]))
         try:
             row = cursor.fetchone()
