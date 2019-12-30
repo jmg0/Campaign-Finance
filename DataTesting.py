@@ -1,12 +1,28 @@
 import json
 import googlemaps
 from datetime import datetime
+import geocoder
+import re
 
-gmaps = googlemaps.Client(key='AIzaSyCjoOrgY8JDznjT9pVauI62XkVwVLL_nIQ')
+g = geocoder.osm('SPOONER, WI 54801')
+print(g.latlng) # returns [lat, lng] [40.7127281, -74.0060152]
+# g = geocoder.geonames('New York City')
+# print(g.latlng)
 
-geocode_result = gmaps.geocode('9630 1.5 Mile Road, East Leroy, MI 49051')
+# string = '5317 ASPEN DR, 5317 ASPEN DR, 5317 ASPEN DR, asdf, OKLAHOMA CITY, OK 73118'
+# add1 = re.findall('.*, (.*, .*)', string)[0]
+# print(add1)
+# address = re.split(',', string)
+# print((address[-2] + ',' + address[-1]).strip())
 
-print(geocode_result)
+
+
+
+# gmaps = googlemaps.Client(key='AIzaSyCjoOrgY8JDznjT9pVauI62XkVwVLL_nIQ')
+#
+# geocode_result = gmaps.geocode('9630 1.5 Mile Road, East Leroy, MI 49051')
+#
+# print(geocode_result)
 
 
 

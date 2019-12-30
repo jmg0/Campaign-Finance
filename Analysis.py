@@ -1,5 +1,8 @@
 import sqlite3
 import pandas as panda
+import geocoder
+import re
+
 
 def arrange_dataframe(dataframe):
     contributor_names = dataframe['contributor_name']
@@ -58,7 +61,7 @@ def candidate_database_populate(cursor, candidate_name):
         start += 1
     return
 
-def candidate_database_compress(cursor, candidate_name):
+def candidate_database_compress(connector, cursor, candidate_name):
     contributor_map = dict()
     relation_name = candidate_name + '_Contributions'
 
@@ -76,26 +79,45 @@ def candidate_database_compress(cursor, candidate_name):
         contributor_id += 1
         contribution_total = 0
         num_contributions = 0
-        cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
+        contributor_add = ''
+        cursor.execute('SELECT Contribution, Address FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
         for row in cursor:
             contribution_total += row[0]
+            contributor_add = row[1]
             num_contributions += 1
-        contributor_map[contributor_id] = [contribution_total, num_contributions]
-    create_compressed_relation(cursor, candidate_name, contributor_map)
+        contributor_map[contributor_id] = [contribution_total, num_contributions, contributor_add]
+    create_compressed_relation(connector, cursor, candidate_name, contributor_map)
     return
 
 
-def create_compressed_relation(cursor, candidate_name, contributor_map):
+def create_compressed_relation(connector, cursor, candidate_name, contributor_map):
     compressed_relation_name = candidate_name + '_Contributions_compressed'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
-                            (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
+                            (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER, Lat NUMERIC, Lng NUMERIC)''')
     for contributor_id,contribution_info in contributor_map.items():
-        id = contributor_id
+        cont_latlng = geocode_addresses(contribution_info[2])
+        if cont_latlng is not None:
+            cont_lat = cont_latlng[0]
+            cont_lng = cont_latlng[1]
+        else:
+            cont_lat = 0
+            cont_lng = 0
+        cont_id = contributor_id
         total_conts = contribution_info[0]
         num_conts = contribution_info[1]
-        cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name + ' (Contributor_id, Contribution, Num_Contributions) VALUES ( ?, ?, ? )', ( id, total_conts, num_conts))
+        cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name +
+                       ' (Contributor_id, Contribution, Num_Contributions, Lat, Lng) VALUES ( ?, ?, ?, ?, ? )',
+                       ( cont_id, total_conts, num_conts, cont_lat, cont_lng ))
+        if contributor_id % 10 == 0:
+            connector.commit()
     return
 
+def geocode_addresses(address):
+    g = geocoder.osm(address)
+    if g.latlng is None:
+        address = re.findall('.*, (.*, .*)', address)[0]
+        g = geocoder.osm(address)
+    return g.latlng
 
 def main():
     database_name = 'raw_contribution_data.sqlite'
@@ -111,7 +133,7 @@ def main():
 
     for candidate in candidate_names:
         cursor = connector.cursor()
-        candidate_database_compress(cursor, candidate)
+        candidate_database_compress(connector, cursor, candidate)
         connector.commit()
         cursor.close()
 
