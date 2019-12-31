@@ -3,7 +3,6 @@ import re
 import sqlite3
 import googlemaps
 import Hidden
-import json
 
 def geocode_addresses_osm(address):
     g = geocoder.osm(address)
