@@ -3,10 +3,30 @@ import googlemaps
 from datetime import datetime
 import geocoder
 import re
-start = 2
-x = [1, 2, 3, 4, 5]
-for i in range(start, len(x)):
-    print(x[i])
+import pandas as pd
+
+
+try:
+    df = pd.read_csv('mycsv.csv')
+except IOError:
+    df = None
+
+if df is None:
+    start = 0
+else:
+    start = len(df['Contribution Total'])
+
+print(start)
+
+
+
+
+
+
+# start = 2
+# x = [1, 2, 3, 4, 5]
+# for i in range(start, len(x)):
+#     print(x[i])
 
 # g = geocoder.osm('SPOONER, WI 54801')
 # print(g.latlng) # returns [lat, lng] [40.7127281, -74.0060152]

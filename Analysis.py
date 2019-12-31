@@ -1,7 +1,6 @@
 import sqlite3
 import pandas as panda
-import geocoder
-import re
+import Geocoder
 
 
 def arrange_dataframe(dataframe):
@@ -44,6 +43,7 @@ def candidate_database_populate(connector, cursor, candidate_name):
         start = 0
 
     contributor_id = 0
+    contributor_ids = list()
     for i in range(start, len(contributor_info[0])):
         cursor.execute('SELECT * FROM ' + relation_name + ' WHERE Name=? AND Address=?', (contributor_info[0][i], contributor_info[1][i]))
         try:
@@ -51,9 +51,12 @@ def candidate_database_populate(connector, cursor, candidate_name):
             if row is not None:
                 contributor_id = row[0]
             else:
-                contributor_id += 1
+                contributor_id = max(contributor_ids) + 1
         except:
             contributor_id += 1
+
+        if contributor_id not in contributor_ids:
+            contributor_ids.append(contributor_id)
 
         cursor.execute('''INSERT OR IGNORE INTO ''' + relation_name + '''
                     (Contributor_id, id, Name, Address, Contribution, Date, Occupation) VALUES
@@ -81,13 +84,11 @@ def candidate_database_compress(connector, cursor, candidate_name):
         contributor_id += 1
         contribution_total = 0
         num_contributions = 0
-        contributor_add = ''
-        cursor.execute('SELECT Contribution, Address FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
+        cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
         for row in cursor:
             contribution_total += row[0]
-            contributor_add = row[1]
             num_contributions += 1
-        contributor_map[contributor_id] = [contribution_total, num_contributions, contributor_add]
+        contributor_map[contributor_id] = [contribution_total, num_contributions]
     create_compressed_relation(connector, cursor, candidate_name, contributor_map)
     return
 
@@ -95,31 +96,25 @@ def candidate_database_compress(connector, cursor, candidate_name):
 def create_compressed_relation(connector, cursor, candidate_name, contributor_map):
     compressed_relation_name = candidate_name + '_Contributions_compressed'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
-                            (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER, Lat NUMERIC, Lng NUMERIC)''')
+                            (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
     for contributor_id,contribution_info in contributor_map.items():
-        cont_latlng = geocode_addresses(contribution_info[2])
-        if cont_latlng is not None:
-            cont_lat = cont_latlng[0]
-            cont_lng = cont_latlng[1]
-        else:
-            cont_lat = 0
-            cont_lng = 0
+        # cont_latlng = Geocoder.geocode_addresses(contribution_info[2])
+        # if cont_latlng is not None:
+        #     cont_lat = cont_latlng[0]
+        #     cont_lng = cont_latlng[1]
+        # else:
+        #     cont_lat = 0
+        #     cont_lng = 0
         cont_id = contributor_id
         total_conts = contribution_info[0]
         num_conts = contribution_info[1]
         cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name +
-                       ' (Contributor_id, Contribution, Num_Contributions, Lat, Lng) VALUES ( ?, ?, ?, ?, ? )',
-                       ( cont_id, total_conts, num_conts, cont_lat, cont_lng ))
+                       ' (Contributor_id, Contribution, Num_Contributions ) VALUES ( ?, ?, ? )',
+                       ( cont_id, total_conts, num_conts ))
         if contributor_id % 10 == 0:
             connector.commit()
     return
 
-def geocode_addresses(address):
-    g = geocoder.osm(address)
-    if g.latlng is None:
-        address = re.findall('.*, (.*, .*)', address)[0]
-        g = geocoder.osm(address)
-    return g.latlng
 
 def main():
     database_name = 'raw_contribution_data.sqlite'
@@ -127,12 +122,14 @@ def main():
 
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
 
+    # transfer data into RDB
     for candidate in candidate_names:
         cursor = connector.cursor()
         candidate_database_populate(connector, cursor, candidate)
         connector.commit()
         cursor.close()
 
+    # compress data into single entry per person per address
     for candidate in candidate_names:
         cursor = connector.cursor()
         candidate_database_compress(connector, cursor, candidate)
