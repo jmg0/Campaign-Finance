@@ -22,6 +22,8 @@ def geocode_addresses_google(address):
     lng = g['geometry']['location']['lng']
     return [lat, lng]
 
+
+
 def geocode_database(database_name, candidate_name):
     try:
         connector = sqlite3.connect(database_name)
