@@ -4,19 +4,25 @@ from datetime import datetime
 import geocoder
 import re
 import pandas as pd
+import Geocoder
 
 
-try:
-    df = pd.read_csv('mycsv.csv')
-except IOError:
-    df = None
+addy = '7789 WILBURN RD, PANGBURN, AR 72121'
+print(Geocoder.geocode_addresses_osm(addy))
+print(Geocoder.geocode_addresses_google(addy))
 
-if df is None:
-    start = 0
-else:
-    start = len(df['Contribution Total'])
 
-print(start)
+# try:
+#     df = pd.read_csv('mycsv.csv')
+# except IOError:
+#     df = None
+#
+# if df is None:
+#     start = 0
+# else:
+#     start = len(df['Contribution Total'])
+#
+# print(start)
 
 
 
@@ -42,7 +48,7 @@ print(start)
 
 
 
-# gmaps = googlemaps.Client(key='AIzaSyCjoOrgY8JDznjT9pVauI62XkVwVLL_nIQ')
+#
 #
 # geocode_result = gmaps.geocode('9630 1.5 Mile Road, East Leroy, MI 49051')
 #
