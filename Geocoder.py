@@ -3,6 +3,8 @@ import re
 import sqlite3
 import googlemaps
 import Hidden
+from arcgis.geocoding import geocode
+
 
 def geocode_addresses_osm(address):
     g = geocoder.osm(address)
@@ -22,6 +24,8 @@ def geocode_addresses_google(address):
     lng = g['geometry']['location']['lng']
     return [lat, lng]
 
+def geocode_addresses_arcgis(address):
+    # to do
 
 
 def geocode_database(database_name, candidate_name):
