@@ -2,3 +2,10 @@
 /zipCodeGeoJSONData/
 /TestData/
 .DS_Store
+*.sqlite
+/Finance Data
+/mmqgis
+Hidden.py
+*.csv
+*.json
+*.sql
