@@ -9,9 +9,9 @@ import Geocoder
 
 addy = '7789 WILBURN RD, PANGBURN, AR 72121'
 print(Geocoder.geocode_addresses_osm(addy))
-print(Geocoder.geocode_addresses_google(addy))
+# print(Geocoder.geocode_addresses_google(addy))
 # print(Geocoder.geocode_addresses_arcgis(addy))
-
+print(Geocoder.geocode_addresses_locationIQ(addy))
 
 # try:
 #     df = pd.read_csv('mycsv.csv')

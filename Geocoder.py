@@ -4,6 +4,7 @@ import sqlite3
 import googlemaps
 import Hidden
 from arcgis.geocoding import geocode
+import requests
 
 
 def geocode_addresses_osm(address):
@@ -24,8 +25,20 @@ def geocode_addresses_google(address):
     lng = g['geometry']['location']['lng']
     return [lat, lng]
 
+def geocode_addresses_locationIQ(address):
+    url = "https://us1.locationiq.com/v1/search.php"
+    data = {
+        'key': Hidden.locationIQ_api_key,
+        'q': address,
+        'format': 'json'
+    }
+    response = requests.get(url, params=data).json()
+    lat = float(response[0]['lat'])
+    lng = float(response[0]['lon'])
+    return [lat, lng]
+
 def geocode_addresses_arcgis(address):
-    # to do
+    geocode(address)
 
 
 def geocode_database(database_name, candidate_name):

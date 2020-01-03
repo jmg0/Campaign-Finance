@@ -114,28 +114,3 @@ def create_compressed_relation(connector, cursor, candidate_name, contributor_ma
         if contributor_id % 10 == 0:
             connector.commit()
     return
-
-
-def main():
-    database_name = 'raw_contribution_data.sqlite'
-    connector = sqlite3.connect(database_name)
-
-    candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
-
-    # transfer data into RDB
-    for candidate in candidate_names:
-        cursor = connector.cursor()
-        candidate_database_populate(connector, cursor, candidate)
-        connector.commit()
-        cursor.close()
-
-    # compress data into single entry per person per address
-    for candidate in candidate_names:
-        cursor = connector.cursor()
-        candidate_database_compress(connector, cursor, candidate)
-        connector.commit()
-        cursor.close()
-
-
-if __name__  == '__main__':
-    main()
