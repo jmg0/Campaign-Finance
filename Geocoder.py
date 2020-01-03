@@ -51,25 +51,51 @@ def geocode_database(database_name, candidate_name):
     cursor = connector.cursor()
 
     geocoded_contributors = dict()
-    geocoded_RBD_name = candidate_name + '_Geocoded'
+    geocoded_RDB_name = candidate_name + '_Geocoded'
     candidate_RDB = candidate_name + '_Contributions'
-    address = candidate_RDB + '.Address'
-    cont_id = candidate_RDB + '.Contributor_id'
+    address_series = candidate_RDB + '.Address'
+    cont_id_series = candidate_RDB + '.Contributor_id'
     compressed_RDB = candidate_RDB + '_compressed'
-    comp_cont_id = compressed_RDB + '.Contributor_id'
-    contribution = compressed_RDB + '.Contribution'
+    comp_cont_id_series = compressed_RDB + '.Contributor_id'
+    contribution_series = compressed_RDB + '.Contribution'
 
-    create_table_query = 'CREATE TABLE IF NOT EXISTS ' + geocoded_RBD_name + ' (Contributor_id INTEGER, Latitude NUMERIC, Longitude NUMERIC)'
-    retrieve_data_query = 'SELECT DISTINCT ' + comp_cont_id + ', ' + contribution + ', ' + address + \
-                          ' FROM ' + compressed_RDB + ' JOIN ' + candidate_RDB + ' ON ' + comp_cont_id + \
-                          ' = ' + cont_id
+    create_table_query = 'CREATE TABLE IF NOT EXISTS ' + geocoded_RDB_name + ' (Contributor_id INTEGER, Contribution NUMERIC, Latitude NUMERIC, Longitude NUMERIC)'
+    cursor.execute(create_table_query)
 
+    # get starting value
+    cursor.execute('SELECT max(Contributor_id) FROM ' + geocoded_RDB_name)
+    start = None
+    try:
+        row = cursor.fetchone()
+        if row is None:
+            start = 0
+        else:
+            start = row[0]
+    except:
+        start = 0
+    if start is None:
+        start = 0
+
+
+    retrieve_data_query = 'SELECT DISTINCT ' + comp_cont_id_series + ', ' + contribution_series + ', ' + address_series + \
+                          ' FROM ' + compressed_RDB + ' JOIN ' + candidate_RDB + ' ON ' + comp_cont_id_series + \
+                          ' = ' + cont_id_series + ' AND ' + comp_cont_id_series + ' > ' + start
     cursor.execute(retrieve_data_query)
     for row in cursor:
         contributor_id = row[0]
         contribution = row[1]
         address = row[2]
+        coordinates = list() # will = geocode_XX(address) method and return [lat, lng]
+        lat = coordinates[0]
+        lng = coordinates[1]
+        insert_entry_query = 'INSERT OR IGNORE INTO ' + geocoded_RDB_name + \
+                             ' (Contributor_id INTEGER, Contribution NUMERIC, Latitude NUMERIC, Longitude NUMERIC)' + \
+                             ' VALUES ( ?, ?, ?, ? )'
+        cursor.execute(insert_entry_query, (contributor_id, contribution, lat, lng) )
+        if contributor_id % 25 == 0:
+            connector.commit()
 
+    connector.commit()
     cursor.close()
     connector.close()
 
