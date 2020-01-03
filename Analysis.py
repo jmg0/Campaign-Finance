@@ -1,6 +1,5 @@
 import sqlite3
 import pandas as panda
-import Geocoder
 
 
 def arrange_dataframe(dataframe):

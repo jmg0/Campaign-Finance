@@ -48,9 +48,30 @@ def geocode_database(database_name, candidate_name):
         connector = sqlite3.connect(database_name)
     except:
         return
-
     cursor = connector.cursor()
 
-    # join address and contribution id for
-    #
+    geocoded_contributors = dict()
+    geocoded_RBD_name = candidate_name + '_Geocoded'
+    candidate_RDB = candidate_name + '_Contributions'
+    address = candidate_RDB + '.Address'
+    cont_id = candidate_RDB + '.Contributor_id'
+    compressed_RDB = candidate_RDB + '_compressed'
+    comp_cont_id = compressed_RDB + '.Contributor_id'
+    contribution = compressed_RDB + '.Contribution'
+
+    create_table_query = 'CREATE TABLE IF NOT EXISTS ' + geocoded_RBD_name + ' (Contributor_id INTEGER, Latitude NUMERIC, Longitude NUMERIC)'
+    retrieve_data_query = 'SELECT DISTINCT ' + comp_cont_id + ', ' + contribution + ', ' + address + \
+                          ' FROM ' + compressed_RDB + ' JOIN ' + candidate_RDB + ' ON ' + comp_cont_id + \
+                          ' = ' + cont_id
+
+    cursor.execute(retrieve_data_query)
+    for row in cursor:
+        contributor_id = row[0]
+        contribution = row[1]
+        address = row[2]
+
+    cursor.close()
+    connector.close()
+
+    return
 
