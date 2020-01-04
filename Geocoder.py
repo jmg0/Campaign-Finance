@@ -5,6 +5,7 @@ import googlemaps
 import Hidden
 from arcgis.geocoding import geocode
 import requests
+from mapbox import Geocoder as gc
 
 # unlimited if following OSM rules and not using too much
 def geocode_addresses_osm(address):
@@ -16,6 +17,16 @@ def geocode_addresses_osm(address):
             address = re.findall('.*, (.*)', address)
             g = geocoder.osm(address)
     return g.latlng
+
+# rate limit unchanging?
+def geocode_addresses_mapbox(address, key):
+    geocoder = gc(access_token=key)
+    response = geocoder.forward(address, limit=1)
+    print(response.headers['X-Rate-Limit-Limit'])
+    coordinates = response.json()['features'][0]['geometry']['coordinates']
+    lat = coordinates[1]
+    lng = coordinates[0]
+    return [lat, lng]
 
 # ~60,000 per key
 def geocode_addresses_google(address, key):

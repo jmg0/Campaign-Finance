@@ -5,13 +5,20 @@ import geocoder
 import re
 import pandas as pd
 import Geocoder
+import Hidden
 
+# ad_list = ['18 WILDWOOD CIR, FLETCHER, NC 28732', '19634 E 1080 RD, ELK CITY, OK 73644', '31221 VIA DEL VERDE, SAN JUAN CAPISTRANO, CA 92675', '40 N 14TH PL, FERNANDINA BEACH, FL 32034', '95 DILLINGHAM WAY, HANOVER, MA 2339']
+
+# for ad in ad_list:
+#     print(Geocoder.geocode_addresses_osm(ad))
+#     print(Geocoder.geocode_addresses_mapbox(ad, Hidden.mapbox_api_token))
 
 addy = '7789 WILBURN RD, PANGBURN, AR 72121'
-# print(Geocoder.geocode_addresses_osm(addy))
+print(Geocoder.geocode_addresses_osm(addy))
 # print(Geocoder.geocode_addresses_google(addy))
 # print(Geocoder.geocode_addresses_arcgis(addy))
 # print(Geocoder.geocode_addresses_locationIQ(addy))
+print(Geocoder.geocode_addresses_mapbox(addy, Hidden.mapbox_api_token))
 
 # try:
 #     df = pd.read_csv('mycsv.csv')
