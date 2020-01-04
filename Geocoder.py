@@ -76,7 +76,6 @@ def geocode_database(database_name, candidate_name):
     if start is None:
         start = 0
 
-
     retrieve_data_query = 'SELECT DISTINCT ' + comp_cont_id_series + ', ' + contribution_series + ', ' + address_series + \
                           ' FROM ' + compressed_RDB + ' JOIN ' + candidate_RDB + ' ON ' + comp_cont_id_series + \
                           ' = ' + cont_id_series + ' AND ' + comp_cont_id_series + ' > ' + start
