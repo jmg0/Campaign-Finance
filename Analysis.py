@@ -44,30 +44,24 @@ def candidate_database_populate(connector, cursor, candidate_name):
     contributor_id = 0
     contributor_ids = list()
     for i in range(start, len(contributor_info[0])):
+        cursor.execute('SELECT * FROM ' + relation_name + ' WHERE Name=? AND Address=?', (contributor_info[0][i], contributor_info[1][i]))
         try:
-            cursor.execute('SELECT * FROM ' + relation_name + ' WHERE Name=? AND Address=?',
-                           (contributor_info[0][i], contributor_info[1][i]))
-            try:
-                row = cursor.fetchone()
-                if row is not None:
-                    contributor_id = row[0]
-                else:
-                    contributor_id = max(contributor_ids) + 1
-            except:
-                contributor_id += 1
-
-            if contributor_id not in contributor_ids:
-                contributor_ids.append(contributor_id)
-
-            cursor.execute('''INSERT OR IGNORE INTO ''' + relation_name + '''
-                                (Contributor_id, id, Name, Address, Contribution, Date, Occupation) VALUES
-                                ( ?, ?, ?, ?, ?, ?, ?)''', (
-            contributor_id, start, contributor_info[0][i], contributor_info[1][i], float(contributor_info[2][i]),
-            contributor_info[3][i], contributor_info[4][i]))
-            start += 1
-            if i % 10 == 0:
-                connector.commit()
+            row = cursor.fetchone()
+            if row is not None:
+                contributor_id = row[0]
+            else:
+                contributor_id = max(contributor_ids) + 1
         except:
+            contributor_id += 1
+
+        if contributor_id not in contributor_ids:
+            contributor_ids.append(contributor_id)
+
+        cursor.execute('''INSERT OR IGNORE INTO ''' + relation_name + '''
+                    (Contributor_id, id, Name, Address, Contribution, Date, Occupation) VALUES
+                    ( ?, ?, ?, ?, ?, ?, ?)''', (contributor_id, start, contributor_info[0][i], contributor_info[1][i], float(contributor_info[2][i]), contributor_info[3][i], contributor_info[4][i]) )
+        start += 1
+        if i % 10 == 0:
             connector.commit()
     connector.commit()
     return

@@ -23,9 +23,7 @@ def main():
         cursor.close()
     connector.close()
 
-    Geocoder.geocode_database(database_name, 'Sanders')
-
-
+    #Geocoder.geocode_database(database_name, 'Sanders')
 
 if __name__  == '__main__':
     main()
