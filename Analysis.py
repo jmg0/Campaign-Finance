@@ -97,13 +97,6 @@ def create_compressed_relation(connector, cursor, candidate_name, contributor_ma
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
                             (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
     for contributor_id,contribution_info in contributor_map.items():
-        # cont_latlng = Geocoder.geocode_addresses(contribution_info[2])
-        # if cont_latlng is not None:
-        #     cont_lat = cont_latlng[0]
-        #     cont_lng = cont_latlng[1]
-        # else:
-        #     cont_lat = 0
-        #     cont_lng = 0
         cont_id = contributor_id
         total_conts = contribution_info[0]
         num_conts = contribution_info[1]

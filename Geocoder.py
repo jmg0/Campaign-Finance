@@ -89,19 +89,20 @@ def geocode_database(database_name, candidate_name):
 
     retrieve_data_query = 'SELECT DISTINCT ' + comp_cont_id_series + ', ' + contribution_series + ', ' + address_series + \
                           ' FROM ' + compressed_RDB + ' JOIN ' + candidate_RDB + ' ON ' + comp_cont_id_series + \
-                          ' = ' + cont_id_series + ' AND ' + comp_cont_id_series + ' > ' + start
+                          ' = ' + cont_id_series + ' AND ' + comp_cont_id_series + ' > ' + str(start)
     cursor.execute(retrieve_data_query)
-    for row in cursor:
+    for row in cursor.fetchall():
         contributor_id = row[0]
         contribution = row[1]
         address = row[2]
-        coordinates = list() # will = geocode_XX(address) method and return [lat, lng]
+        # coordinates = list() # will = geocode_XX(address) method and return [lat, lng]
+        coordinates = geocode_addresses_osm(address)
         lat = coordinates[0]
         lng = coordinates[1]
         insert_entry_query = 'INSERT OR IGNORE INTO ' + geocoded_RDB_name + \
-                             ' (Contributor_id INTEGER, Contribution NUMERIC, Latitude NUMERIC, Longitude NUMERIC)' + \
+                             ' (Contributor_id, Contribution, Latitude, Longitude)' + \
                              ' VALUES ( ?, ?, ?, ? )'
-        cursor.execute(insert_entry_query, (contributor_id, contribution, lat, lng) )
+        cursor.execute(insert_entry_query, ( contributor_id, contribution, lat, lng ) )
         if contributor_id % 25 == 0:
             connector.commit()
 
