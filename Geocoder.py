@@ -96,7 +96,11 @@ def geocode_database(database_name, candidate_name):
         contribution = row[1]
         address = row[2]
         # coordinates = list() # will = geocode_XX(address) method and return [lat, lng]
-        coordinates = geocode_addresses_osm(address)
+        try:
+            coordinates = geocode_addresses_osm(address)
+        except:
+            connector.commit()
+            coordinates = ['not found', 'not found']
         lat = coordinates[0]
         lng = coordinates[1]
         insert_entry_query = 'INSERT OR IGNORE INTO ' + geocoded_RDB_name + \
