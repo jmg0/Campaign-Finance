@@ -22,7 +22,7 @@ def geocode_addresses_osm(address):
 def geocode_addresses_mapbox(address, key):
     geocoder = gc(access_token=key)
     response = geocoder.forward(address, limit=1)
-    print(response.headers['X-Rate-Limit-Limit'])
+    #print(response.headers['X-Rate-Limit-Limit'])
     coordinates = response.json()['features'][0]['geometry']['coordinates']
     lat = coordinates[1]
     lng = coordinates[0]

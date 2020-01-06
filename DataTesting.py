@@ -14,11 +14,12 @@ import Hidden
 #     print(Geocoder.geocode_addresses_mapbox(ad, Hidden.mapbox_api_token))
 
 addy = '7789 WILBURN RD, PANGBURN, AR 72121'
-print(Geocoder.geocode_addresses_osm(addy))
-# print(Geocoder.geocode_addresses_google(addy))
+addy = '4509 BOASTFIELD LN, OLNEY, MD 208322068'
+print('1', Geocoder.geocode_addresses_osm(addy))
+print('2', Geocoder.geocode_addresses_google(addy, key=Hidden.google_api_key))
 # print(Geocoder.geocode_addresses_arcgis(addy))
-# print(Geocoder.geocode_addresses_locationIQ(addy))
-print(Geocoder.geocode_addresses_mapbox(addy, Hidden.mapbox_api_token))
+print('3', Geocoder.geocode_addresses_locationIQ(addy, key=Hidden.locationIQ_api_key))
+print('4', Geocoder.geocode_addresses_mapbox(addy, Hidden.mapbox_api_token))
 
 # try:
 #     df = pd.read_csv('mycsv.csv')

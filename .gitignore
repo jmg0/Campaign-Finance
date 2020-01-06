@@ -3,6 +3,7 @@
 /TestData/
 .DS_Store
 *.sqlite
+*.sqlite-journal
 /Finance Data
 /mmqgis
 Hidden.py
