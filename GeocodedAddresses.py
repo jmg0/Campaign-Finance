@@ -12,44 +12,44 @@ def address_database_populate(connector, candidate_name):
 
     relation_name = candidate_name + '_Addresses'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + relation_name + '''
-                    (Contributor_id INTEGER PRIMARY KEY, Name TEXT, Address TEXT, Latitude NUMERIC, Longitude NUMERIC, UNIQUE(Name, Address) ON CONFLICT REPLACE)''')
+                    (Contributor_id INTEGER PRIMARY KEY, Name TEXT, Address TEXT, Latitude NUMERIC, Longitude NUMERIC, Geocoded INTEGER, UNIQUE(Name, Address) ON CONFLICT REPLACE)''')
 
     for index,row in dataframe.iterrows():
         name = row['contributor_name']
         address = str(row['contributor_street_1']) + ', ' + str(row['contributor_city']) + ', ' + str(row['contributor_state']) + ' ' + str(row['contributor_zip'])
         lat = 0
         lng = 0
+        geocoded = 0
         cursor.execute('''INSERT OR IGNORE INTO ''' + relation_name + '''
-                        (Name, Address, Latitude, Longitude) VALUES ( ?, ?, ?, ? )''', (name, address, lat, lng))
+                        (Name, Address, Latitude, Longitude, Geocoded) VALUES ( ?, ?, ?, ? )''', (name, address, lat, lng, geocoded))
+    cursor.close()
+    return
 
-    cursor.execute('SELECT * FROM ' + relation_name)
+def geocode_address_database(connector, candidate_name):
+    cursor = connector.cursor()
+    cursor2 = connector.cursor()
+    relation_name = candidate_name + '_Addresses'
+    cursor.execute('SELECT * FROM ' + relation_name + ' WHERE Geocoded=0')
     for row in cursor:
-        print(row[0])
-
-    # for i in range(len(contributor_info[0])):
-    #     name = contributor_info[0][i]
-    #     address = contributor_info[1][i]
-    #     cursor.execute('SELECT Contributor_id FROM ' + relation_name + ' WHERE Name=? AND Address=?', ( name, address ))
-    #     try:
-    #         row = cursor.fetchone()
-    #         if row is not None:
-    #             continue
-    #     except:
-    #         pass
-    #
-    #     try:
-    #         coordinates = Geocoder.geocode_addresses_osm(contributor_info[1][i])
-    #     except:
-    #         connector.commit()
-    #         coordinates = ['not found', 'not found']
-    #     lat = coordinates[0]
-    #     lng = coordinates[1]
-    #     cursor.execute('''INSERT OR IGNORE INTO ''' + relation_name + '''
-    #                         (Name, Address, Latitude, Longitude) VALUES
-    #                         ( ?, ?, ?, ? )''',
-    #                    (name, address, lat, lng))
-    #     if i % 10 == 0:
-    #         connector.commit()
+        cont_id = row[0]
+        name = row[1]
+        address = row[2]
+        try:
+            coordinates = Geocoder.geocode_addresses_osm(address)
+        except:
+            connector.commit()
+            coordinates = [0, 0]
+        geocoded = 1
+        lat = coordinates[0]
+        lng = coordinates[1]
+        cursor2.execute(
+            'INSERT OR IGNORE INTO ' + relation_name + '(Name, Address, Latitude, Longitude, Geocoded) VALUES ( ?, ?, ?, ?, ?, ? )',
+            (cont_id, name, address, lat, lng, geocoded))
+        if cont_id % 20 == 0:
+            connector.commit()
+    connector.commit()
+    cursor2.close()
+    cursor.close()
     return
 
 def main():
