@@ -44,8 +44,10 @@ def main():
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
     database_name = 'raw_contribution_data.sqlite'
     connector = sqlite3.connect(database_name)
+    # first attempt large batch of geocoding
     address_database_populate(connector, 'Sanders')
     connector.commit()
+
 
 if __name__ == '__main__':
     main()
