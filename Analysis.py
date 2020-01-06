@@ -10,10 +10,13 @@ def arrange_dataframe(dataframe):
     contributor_zip = dataframe['contributor_zip']
     contributor_occupation = dataframe['contributor_occupation']
     contributor_date = dataframe['contribution_receipt_date']
-    contributor_contribution = dataframe['contribution_receipt_amount']
+    contributor_contribution = panda.to_numeric(dataframe['contribution_receipt_amount'])
     contributor_address = dict()
     for i in range(len(contributor_street_address)):
-        contributor_address[i] = str(contributor_street_address[i]) + ', ' + str(contributor_city[i]) + ', ' + str(contributor_state[i]) + ' ' + str(contributor_zip[i])
+        zipcode = str(contributor_zip[i])
+        if len(zipcode) > 5:
+            zipcode = zipcode[0:5]
+        contributor_address[i] = str(contributor_street_address[i]) + ', ' + str(contributor_city[i]) + ', ' + str(contributor_state[i]) + ' ' + zipcode
     return [contributor_names, contributor_address, contributor_contribution, contributor_date, contributor_occupation]
 
 
