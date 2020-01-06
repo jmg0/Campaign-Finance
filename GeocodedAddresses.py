@@ -37,7 +37,10 @@ def geocode_address_database(connector, candidate_name):
             continue
         else:
             try:
-                coordinates = Geocoder.geocode_addresses_osm(row[1])
+                address = row[1]
+                #coordinates = Geocoder.geocode_addresses_osm(address)
+                #coordinates = Geocoder.geocode_addresses_locationIQ(address, key=Hidden.locationIQ_api_key)
+                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token)
             except:
                 connector.commit()
                 coordinates = [0, 0]
@@ -46,31 +49,7 @@ def geocode_address_database(connector, candidate_name):
             cursor.execute('UPDATE ' + relation_name + ' SET Latitude=?, Longitude=?, Geocoded=1 WHERE Contributor_id=?', (lat, lng, i) )
         connector.commit()
     connector.commit()
-    # return
-    #
-    #
-    # geocoded_addresses = dict()
-    # for row in cursor:
-    #     cont_id = row[0]
-    #     name = row[1]
-    #     address = row[2]
-    #     try:
-    #         coordinates = Geocoder.geocode_addresses_osm(address)
-    #     except:
-    #         connector.commit()
-    #         coordinates = [0, 0]
-    #     lat = coordinates[0]
-    #     lng = coordinates[1]
-    #     geocoded_addresses[cont_id] = [name, address, lat, lng]
-    #
-    # for geo_id,geo_info in geocoded_addresses.items():
-    #     cursor.execute('UPSERT INTO ' + relation_name + '(Contributor_id, Name, Address, Latitude, Longitude, Geocoded) VALUES ( ?, ?, ?, ?, ?, ? )',
-    #                    (geo_id, geo_info[0], geo_info[1], geo_info[2], geo_info[3], 1))
-    #     if geo_id % 20 == 0:
-    #         connector.commit()
-    # connector.commit()
-    # cursor.close()
-    # return
+    return
 
 def main():
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
