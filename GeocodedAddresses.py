@@ -40,7 +40,7 @@ def geocode_address_database(connector, candidate_name):
                 address = row[1]
                 #coordinates = Geocoder.geocode_addresses_osm(address)
                 #coordinates = Geocoder.geocode_addresses_locationIQ(address, key=Hidden.locationIQ_api_key)
-                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token)
+                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token_2)
             except:
                 connector.commit()
                 coordinates = [0, 0]
