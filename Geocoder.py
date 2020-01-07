@@ -2,7 +2,6 @@ import geocoder
 import re
 import sqlite3
 import googlemaps
-import Hidden
 from arcgis.geocoding import geocode
 import requests
 from mapbox import Geocoder as gc
