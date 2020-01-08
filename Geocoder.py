@@ -17,7 +17,7 @@ def geocode_addresses_osm(address):
             g = geocoder.osm(address)
     return g.latlng
 
-# rate limit unchanging?
+# 100,000 per key per month
 def geocode_addresses_mapbox(address, key):
     geocoder = gc(access_token=key)
     response = geocoder.forward(address, limit=1)
