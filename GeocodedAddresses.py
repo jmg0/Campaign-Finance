@@ -40,7 +40,7 @@ def geocode_address_database(connector, candidate_name):
                 address = row[1]
                 #coordinates = Geocoder.geocode_addresses_osm(address)
                 #coordinates = Geocoder.geocode_addresses_locationIQ(address, key=Hidden.locationIQ_api_key)
-                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token_2)
+                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token_3)
             except:
                 connector.commit()
                 coordinates = [0, 0]
@@ -55,10 +55,10 @@ def main():
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
     database_name = 'raw_contribution_data.sqlite'
     connector = sqlite3.connect(database_name)
-    #print('step 1')
-    #address_database_populate(connector, 'Trump')
-    #print('step 2')
-    geocode_address_database(connector, 'Trump')
+    # STEP 1
+    #address_database_populate(connector, 'Warren')
+    # STEP 2
+    geocode_address_database(connector, 'Warren')
     connector.commit()
 
 
