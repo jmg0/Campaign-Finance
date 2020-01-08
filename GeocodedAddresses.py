@@ -56,9 +56,9 @@ def main():
     database_name = 'raw_contribution_data.sqlite'
     connector = sqlite3.connect(database_name)
     # STEP 1
-    #address_database_populate(connector, 'Warren')
+    #address_database_populate(connector, 'Buttigieg')
     # STEP 2
-    geocode_address_database(connector, 'Warren')
+    geocode_address_database(connector, 'Buttigieg')
     connector.commit()
 
 
