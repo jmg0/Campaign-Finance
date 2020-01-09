@@ -40,7 +40,7 @@ def geocode_address_database(connector, candidate_name):
                 address = row[1]
                 #coordinates = Geocoder.geocode_addresses_osm(address)
                 #coordinates = Geocoder.geocode_addresses_locationIQ(address, key=Hidden.locationIQ_api_key)
-                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token_3)
+                coordinates = Geocoder.geocode_addresses_mapbox(address, key=Hidden.mapbox_api_token_2)
             except:
                 connector.commit()
                 coordinates = [0, 0]
@@ -56,9 +56,9 @@ def main():
     database_name = 'raw_contribution_data.sqlite'
     connector = sqlite3.connect(database_name)
     # STEP 1
-    #address_database_populate(connector, 'Buttigieg')
+    #address_database_populate(connector, 'Yang')
     # STEP 2
-    geocode_address_database(connector, 'Buttigieg')
+    geocode_address_database(connector, 'Klobuchar')
     connector.commit()
 
 
