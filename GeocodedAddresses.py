@@ -58,7 +58,7 @@ def main():
     # STEP 1
     #address_database_populate(connector, 'Yang')
     # STEP 2
-    geocode_address_database(connector, 'Klobuchar')
+    #geocode_address_database(connector, 'Yang')
     connector.commit()
 
 
