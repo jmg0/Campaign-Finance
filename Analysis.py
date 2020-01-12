@@ -69,21 +69,45 @@ def candidate_database_populate(connector, cursor, candidate_name):
     connector.commit()
     return
 
+def fix_cont_id(connector, cursor, candidate_name):
+    relation_name = candidate_name + '_Contributions'
+    contributor_id_map = dict()
+    contributor_id = 1
+    cursor.execute('SELECT * FROM ' + relation_name)
+    for row in cursor:
+        contributor_name = row[2]
+        contributor_address = row[3]
+        contributor = (contributor_name, contributor_address)
+        if contributor_id_map.get(contributor) is None:
+            contributor_id_map[contributor] = contributor_id
+            contributor_id += 1
+
+    for contributors,cont_ids in contributor_id_map.items():
+        cursor.execute('UPDATE ' + relation_name + ' SET Contributor_id=? WHERE Name=? AND Address=?', (cont_ids, contributors[0], contributors[1]))
+        if cont_ids % 10 == 0:
+            connector.commit()
+    connector.commit()
+    return
+
 def candidate_database_compress(connector, cursor, candidate_name):
     contributor_map = dict()
     relation_name = candidate_name + '_Contributions'
 
-    cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
+    compressed_relation_name = candidate_name + '_Contributions_compressed'
+    cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
+                                (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
+
+    cursor.execute('SELECT max(Contributor_id) FROM ' + compressed_relation_name)
     try:
         row = cursor.fetchone()
         if row is None:
-            max_contributor_id = 0
+            contributor_id = 1
         else:
-            max_contributor_id = row[0]
+            contributor_id = row[0]+1
     except:
-        max_contributor_id = 0
+        contributor_id = 1
 
-    for contributor_id in range(max_contributor_id):
+    for contributor_id in range(contributor_id):
         contributor_id += 1
         contribution_total = 0
         num_contributions = 0
