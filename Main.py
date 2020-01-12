@@ -8,6 +8,7 @@ def main():
 
     candidate_names = ['Trump', 'Sanders', 'Warren', 'Buttigieg', 'Biden', 'Klobuchar', 'Yang']
 
+    # STEP 1
     # transfer all contribution data into RDB
     for candidate in candidate_names:
         cursor = connector.cursor()
@@ -15,12 +16,13 @@ def main():
         connector.commit()
         cursor.close()
 
+    # STEP 2
     # compress contribution data into single entry per person per address
-    for candidate in candidate_names:
-        cursor = connector.cursor()
-        Analysis.candidate_database_compress(connector, cursor, candidate)
-        connector.commit()
-        cursor.close()
+    # for candidate in candidate_names:
+    #     cursor = connector.cursor()
+    #     Analysis.candidate_database_compress(connector, cursor, candidate)
+    #     connector.commit()
+    #     cursor.close()
     connector.close()
 
     #Geocoder.geocode_database(database_name, 'Sanders')

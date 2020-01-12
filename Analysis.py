@@ -25,6 +25,19 @@ def candidate_database_populate(connector, cursor, candidate_name):
 
     contributor_id = 0
     contributor_ids = list()
+
+    cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
+    max_cont_id = 0
+    try:
+        row = cursor.fetchone()
+        if row is None:
+            max_cont_id = 0
+        else:
+            max_cont_id = row[0]
+    except:
+        max_cont_id = 0
+
+
     for index,row in dataframe.iterrows():
         name = str(row['contributor_name'])
         address = str(row['contributor_street_1']) + ', ' + str(row['contributor_city']) + ', ' + str(row['contributor_state']) + ' ' + str(row['contributor_zip'])
@@ -38,7 +51,9 @@ def candidate_database_populate(connector, cursor, candidate_name):
             if row is not None:
                 contributor_id = row[0]
             else:
-                contributor_id = max(contributor_ids) + 1
+                if max(contributor_ids) > max_cont_id:
+                    max_cont_id = max(contributor_ids)
+                contributor_id = max_cont_id + 1
         except:
             contributor_id += 1
 
