@@ -18,10 +18,10 @@ def main():
 
     # STEP 2
     # correct any broken contributor ids
-    cursor = connector.cursor()
-    Analysis.fix_cont_id(connector, cursor, 'Trump')
-    connector.commit()
-    cursor.close()
+    # cursor = connector.cursor()
+    # Analysis.fix_cont_id(connector, cursor, 'Trump')
+    # connector.commit()
+    # cursor.close()
 
 
     # STEP 3
@@ -31,6 +31,9 @@ def main():
     #     Analysis.candidate_database_compress(connector, cursor, candidate)
     #     connector.commit()
     #     cursor.close()
+    cursor = connector.cursor()
+    Analysis.candidate_database_compress(connector, cursor, 'Trump')
+    connector.commit()
     connector.close()
 
     #Geocoder.geocode_database(database_name, 'Sanders')

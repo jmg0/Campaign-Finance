@@ -90,7 +90,6 @@ def fix_cont_id(connector, cursor, candidate_name):
     return
 
 def candidate_database_compress(connector, cursor, candidate_name):
-    contributor_map = dict()
     relation_name = candidate_name + '_Contributions'
     compressed_relation_name = candidate_name + '_Contributions_compressed'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
@@ -98,7 +97,6 @@ def candidate_database_compress(connector, cursor, candidate_name):
 
     starting_contributor_id = None
     max_contributor_id = None
-
     # find starting contributor id from contributions already processed
     cursor.execute('SELECT max(Contributor_id) FROM ' + compressed_relation_name)
     try:
@@ -128,12 +126,13 @@ def candidate_database_compress(connector, cursor, candidate_name):
         for row in cursor:
             contribution_total += row[0]
             num_contributions += 1
-        contributor_map[contributor_id] = [contribution_total, num_contributions]
-    create_compressed_relation(connector, cursor, candidate_name, contributor_map)
+        cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name + ' (Contributor_id, Contribution, Num_Contributions) VALUES ( ?, ?, ? )', (contributor_id, contribution_total, num_contributions))
+        if contributor_id % 10 == 0:
+            connector.commit()
     connector.commit()
     return
 
-
+# DEPRECATED - functionality incorporated into candidate_database_compress()
 def create_compressed_relation(connector, cursor, candidate_name, contributor_map):
     compressed_relation_name = candidate_name + '_Contributions_compressed'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
