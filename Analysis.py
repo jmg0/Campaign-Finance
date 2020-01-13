@@ -92,23 +92,36 @@ def fix_cont_id(connector, cursor, candidate_name):
 def candidate_database_compress(connector, cursor, candidate_name):
     contributor_map = dict()
     relation_name = candidate_name + '_Contributions'
-
     compressed_relation_name = candidate_name + '_Contributions_compressed'
     cursor.execute('''CREATE TABLE IF NOT EXISTS ''' + compressed_relation_name + '''
                                 (Contributor_id INTEGER, Contribution NUMERIC, Num_Contributions INTEGER)''')
 
+    starting_contributor_id = None
+    max_contributor_id = None
+
+    # find starting contributor id from contributions already processed
     cursor.execute('SELECT max(Contributor_id) FROM ' + compressed_relation_name)
     try:
         row = cursor.fetchone()
         if row is None:
-            contributor_id = 1
+            starting_contributor_id = 1
         else:
-            contributor_id = row[0]+1
+            starting_contributor_id = row[0]+1
     except:
-        contributor_id = 1
+        starting_contributor_id = 1
 
-    for contributor_id in range(contributor_id):
-        contributor_id += 1
+    #find largest contributor id
+    cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
+    try:
+        row = cursor.fetchone()
+        if row is None:
+            max_contributor_id = 1
+        else:
+            max_contributor_id = row[0]
+    except:
+        max_contributor_id = 1
+
+    for contributor_id in range(starting_contributor_id, max_contributor_id+1):
         contribution_total = 0
         num_contributions = 0
         cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
@@ -117,6 +130,7 @@ def candidate_database_compress(connector, cursor, candidate_name):
             num_contributions += 1
         contributor_map[contributor_id] = [contribution_total, num_contributions]
     create_compressed_relation(connector, cursor, candidate_name, contributor_map)
+    connector.commit()
     return
 
 
@@ -133,4 +147,5 @@ def create_compressed_relation(connector, cursor, candidate_name, contributor_ma
                        ( cont_id, total_conts, num_conts ))
         if contributor_id % 10 == 0:
             connector.commit()
+    connector.commit()
     return
