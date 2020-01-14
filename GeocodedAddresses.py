@@ -56,6 +56,7 @@ def geocode_address_database(connector, candidate_name):
 def fix_broken_addresses(connector, candidate_name):
     cursor = connector.cursor()
     relation_name = candidate_name + '_Addresses'
+    compressed_relation_name = candidate_name + '_Contributions_compressed'
     ids_to_be_fixed = dict()
     ids_to_be_removed = list()
     cursor.execute('SELECT Contributor_id, Address, Latitude, Longitude FROM ' + relation_name + ' WHERE Latitude<25 OR Latitude>49 OR Longitude>-65')
@@ -64,7 +65,6 @@ def fix_broken_addresses(connector, candidate_name):
         address = row[1]
         lat = row[2]
         lng = row[3]
-
         if 'APO, AE' or 'APO, AA' or 'APO, AP'  or 'FPO, AP' or 'FPO, AE' or 'FPO, AS' or 'FPO, AA' or 'nan, nan, nan nan'.upper() in address.upper():
             ids_to_be_removed.append(contributor_id)
             continue
@@ -80,10 +80,19 @@ def fix_broken_addresses(connector, candidate_name):
             if zipcode is not None and len(zipcode[0]) == 4:
                 new_zip = '0' + zipcode[0]
                 address = address.replace(zipcode[0], new_zip)
-        ids_to_be_fixed[contributor_id] = [address, lat, lng]
-
-
-
+        ids_to_be_fixed[contributor_id] = [address]
+    for c_id in ids_to_be_removed:
+        print(c_id)
+        cursor.execute('DELETE FROM ' + compressed_relation_name + ' WHERE Contributor_id=?', (c_id, ))
+    connector.commit()
+    for c_id,address in ids_to_be_fixed.items():
+        try:
+            coordinates = Geocoder.geocode_addresses_google(address, Hidden.google_api_key)
+        except:
+            coordinates = [0,0]
+        lat = coordinates[0]
+        lng = coordinates[1]
+        cursor.execute('UPDATE ' + relation_name + ' SET Latitude=?, Longitude=? WHERE Contributor_id=?', (lat, lng, c_id ) )
     connector.commit()
     cursor.close()
     return
