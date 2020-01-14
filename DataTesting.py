@@ -7,19 +7,37 @@ import pandas as pd
 import Geocoder
 import Hidden
 
+ad1 = 'PO BOX 639, BELLEVUE, WA 980090639'
+ad2 = '22 QUICKS ROAD WIMBLEDON, LONDON SW19 1EZ UNITED KINGDOM, ZZ 0'
+ad3 = '2050 JAMIESON AVE, ALEXANDRIA, VA 223146827'
+ad4 = '111 HARRIS RD, PRINCETON, NJ 8540'
+
+if ' NJ ' in ad4.upper():
+    x = re.findall('.* ([0-9]*)', ad4)
+    if x is not None and len(x[0]) == 4:
+        y = '0' + x[0]
+        ad4 = ad4.replace(x[0], y)
+print(ad4)
+
+# if ' wa ' or ' WA ' in ad1:
+#     print('yes'.upper())
+
+
+
+
 # ad_list = ['18 WILDWOOD CIR, FLETCHER, NC 28732', '19634 E 1080 RD, ELK CITY, OK 73644', '31221 VIA DEL VERDE, SAN JUAN CAPISTRANO, CA 92675', '40 N 14TH PL, FERNANDINA BEACH, FL 32034', '95 DILLINGHAM WAY, HANOVER, MA 2339']
 
 # for ad in ad_list:
 #     print(Geocoder.geocode_addresses_osm(ad))
 #     print(Geocoder.geocode_addresses_mapbox(ad, Hidden.mapbox_api_token))
 
-addy = '7789 WILBURN RD, PANGBURN, AR 72121'
-addy = '4509 BOASTFIELD LN, OLNEY, MD 208322068'
-print('1', Geocoder.geocode_addresses_osm(addy))
-print('2', Geocoder.geocode_addresses_google(addy, key=Hidden.google_api_key))
-# print(Geocoder.geocode_addresses_arcgis(addy))
-print('3', Geocoder.geocode_addresses_locationIQ(addy, key=Hidden.locationIQ_api_key))
-print('4', Geocoder.geocode_addresses_mapbox(addy, Hidden.mapbox_api_token))
+# addy = '7789 WILBURN RD, PANGBURN, AR 72121'
+# addy = '4509 BOASTFIELD LN, OLNEY, MD 208322068'
+# print('1', Geocoder.geocode_addresses_osm(addy))
+# print('2', Geocoder.geocode_addresses_google(addy, key=Hidden.google_api_key))
+# # print(Geocoder.geocode_addresses_arcgis(addy))
+# print('3', Geocoder.geocode_addresses_locationIQ(addy, key=Hidden.locationIQ_api_key))
+# print('4', Geocoder.geocode_addresses_mapbox(addy, Hidden.mapbox_api_token))
 
 # try:
 #     df = pd.read_csv('mycsv.csv')

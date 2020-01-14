@@ -4,6 +4,7 @@ import pandas as panda
 import numpy as np
 import Hidden
 import sqlite3
+import re
 
 def address_database_populate(connector, candidate_name):
     cursor = connector.cursor()
@@ -49,6 +50,42 @@ def geocode_address_database(connector, candidate_name):
             cursor.execute('UPDATE ' + relation_name + ' SET Latitude=?, Longitude=?, Geocoded=1 WHERE Contributor_id=?', (lat, lng, i) )
         connector.commit()
     connector.commit()
+    cursor.close()
+    return
+
+def fix_broken_addresses(connector, candidate_name):
+    cursor = connector.cursor()
+    relation_name = candidate_name + '_Addresses'
+    ids_to_be_fixed = dict()
+    ids_to_be_removed = list()
+    cursor.execute('SELECT Contributor_id, Address, Latitude, Longitude FROM ' + relation_name + ' WHERE Latitude<25 OR Latitude>49 OR Longitude>-65')
+    for row in cursor:
+        contributor_id = row[0]
+        address = row[1]
+        lat = row[2]
+        lng = row[3]
+
+        if 'APO, AE' or 'APO, AA' or 'APO, AP'  or 'FPO, AP' or 'FPO, AE' or 'FPO, AS' or 'FPO, AA' or 'nan, nan, nan nan'.upper() in address.upper():
+            ids_to_be_removed.append(contributor_id)
+            continue
+        if ' AK ' or ' HI ' or ' PR ' or ' GU ' or 'SAIPAN' or ' VI ' or ' ZZ ' in address.upper():
+            if lat == 0 or lng == 0:
+                pass # needs to be re-geocoded
+            else:
+                continue
+        if 'PO BOX' in address.upper():
+            address = re.findall('.*, (.*,.*)', address)
+        if ' CT ' or ' MA ' or ' ME ' or ' NH ' or ' NJ ' or ' RI ' or ' VT ' in address.upper():
+            zipcode = re.findall('.* ([0-9]*)', address)
+            if zipcode is not None and len(zipcode[0]) == 4:
+                new_zip = '0' + zipcode[0]
+                address = address.replace(zipcode[0], new_zip)
+        ids_to_be_fixed[contributor_id] = [address, lat, lng]
+
+
+
+    connector.commit()
+    cursor.close()
     return
 
 def main():
@@ -59,6 +96,8 @@ def main():
     #address_database_populate(connector, 'Yang')
     # STEP 2
     #geocode_address_database(connector, 'Yang')
+    # STEP 3
+    #fix_broken_addresses(connector, 'Trump')
     connector.commit()
 
 
