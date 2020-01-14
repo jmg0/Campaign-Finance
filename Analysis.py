@@ -123,7 +123,13 @@ def candidate_database_compress(connector, cursor, candidate_name):
         contribution_total = 0
         num_contributions = 0
         cursor.execute('SELECT Contribution FROM ' + relation_name + ' WHERE Contributor_id=?', (contributor_id, ))
-        for row in cursor:
+        try:
+            rows = cursor.fetchall()
+        except:
+            rows = None
+        if rows is None:
+            continue
+        for row in rows:
             contribution_total += row[0]
             num_contributions += 1
         cursor.execute('INSERT OR IGNORE INTO ' + compressed_relation_name + ' (Contributor_id, Contribution, Num_Contributions) VALUES ( ?, ?, ? )', (contributor_id, contribution_total, num_contributions))

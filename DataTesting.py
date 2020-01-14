@@ -11,13 +11,30 @@ ad1 = 'PO BOX 639, BELLEVUE, WA 980090639'
 ad2 = '22 QUICKS ROAD WIMBLEDON, LONDON SW19 1EZ UNITED KINGDOM, ZZ 0'
 ad3 = '2050 JAMIESON AVE, ALEXANDRIA, VA 223146827'
 ad4 = '111 HARRIS RD, PRINCETON, NJ 8540'
+address = '2506 AKEPA ST, PEARL CITY, HI 96782'
+address = '61 CLINTON ST, MALDEN, MA 02148'
+address = 'PO BOX 4233, COVINA, CA 917230633'
 
-if ' NJ ' in ad4.upper():
-    x = re.findall('.* ([0-9]*)', ad4)
-    if x is not None and len(x[0]) == 4:
-        y = '0' + x[0]
-        ad4 = ad4.replace(x[0], y)
-print(ad4)
+if re.search('PO BOX', address):
+    na = ''
+    address = re.findall('.*, (.*,.*)', address)
+    for x in address:
+        na += x + ' '
+print(na.rstrip())
+
+# if re.search(' CT ', address) or re.search(' MA ', address) or re.search(' ME ', address) or re.search(' NH ',address) or re.search(' NJ ', address) or re.search(' RI ', address) or re.search(' VT ', address):
+#     zipcode = re.findall('.* ([0-9]*)', address)
+#     if zipcode is not None and len(zipcode[0]) == 4:
+#         new_zip = '0' + zipcode[0]
+#         address = address.replace(zipcode[0], new_zip)
+# print(address)
+
+# if ' NJ ' in ad4.upper():
+#     x = re.findall('.* ([0-9]*)', ad4)
+#     if x is not None and len(x[0]) == 4:
+#         y = '0' + x[0]
+#         ad4 = ad4.replace(x[0], y)
+# print(ad4)
 
 # if ' wa ' or ' WA ' in ad1:
 #     print('yes'.upper())

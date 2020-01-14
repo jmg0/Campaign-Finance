@@ -62,30 +62,41 @@ def fix_broken_addresses(connector, candidate_name):
     cursor.execute('SELECT Contributor_id, Address, Latitude, Longitude FROM ' + relation_name + ' WHERE Latitude<25 OR Latitude>49 OR Longitude>-65')
     for row in cursor:
         contributor_id = row[0]
-        address = row[1]
+        address = str(row[1])
         lat = row[2]
         lng = row[3]
-        if 'APO, AE' or 'APO, AA' or 'APO, AP'  or 'FPO, AP' or 'FPO, AE' or 'FPO, AS' or 'FPO, AA' or 'nan, nan, nan nan'.upper() in address.upper():
+        if re.search('APO, AE', address) or re.search('APO, AA' , address) or re.search('APO, AP', address)  or re.search('FPO, AP', address) or re.search('FPO, AE', address) or re.search('FPO, AS', address) or re.search('FPO, AA', address) or re.search('DPO, AE', address) or re.search('nan, nan, nan nan', address) or re.search('INFORMATION REQUESTED', address):
             ids_to_be_removed.append(contributor_id)
             continue
-        if ' AK ' or ' HI ' or ' PR ' or ' GU ' or 'SAIPAN' or ' VI ' or ' ZZ ' in address.upper():
+        if re.search(' AK ', address) or re.search(' HI ', address) or re.search(' FL ', address) or re.search(' PR ', address) or re.search(' GU ', address) or re.search('SAIPAN', address) or re.search(' VI ', address) or re.search(' ZZ ', address) or re.search(' AS ', address):
             if lat == 0 or lng == 0:
                 pass # needs to be re-geocoded
             else:
                 continue
-        if 'PO BOX' in address.upper():
-            address = re.findall('.*, (.*,.*)', address)
-        if ' CT ' or ' MA ' or ' ME ' or ' NH ' or ' NJ ' or ' RI ' or ' VT ' in address.upper():
+        if re.search('PO BOX', address):
+            split_address = re.findall('.*, (.*,.*)', address)
+            address = ''
+            if split_address is not None:
+                for piece in split_address:
+                    address += piece + ' '
+                address = address.rstrip()
+        if re.search('nan, .*', address):
+            split_address = re.findall('nan, (.*)', address)
+            address = split_address[0]
+        if re.search(' CT ', address) or re.search(' MA ', address) or re.search(' ME ', address) or re.search(' NH ', address) or re.search(' NJ ', address) or re.search(' RI ', address) or re.search(' VT ', address):
             zipcode = re.findall('.* ([0-9]*)', address)
             if zipcode is not None and len(zipcode[0]) == 4:
                 new_zip = '0' + zipcode[0]
                 address = address.replace(zipcode[0], new_zip)
-        ids_to_be_fixed[contributor_id] = [address]
+        ids_to_be_fixed[contributor_id] = address
+    print('TO BE REMOVED:', len(ids_to_be_removed))
     for c_id in ids_to_be_removed:
         print(c_id)
-        cursor.execute('DELETE FROM ' + compressed_relation_name + ' WHERE Contributor_id=?', (c_id, ))
+        cursor.execute('DELETE FROM ' + relation_name + ' WHERE Contributor_id=?', (c_id, ))
     connector.commit()
+    print('TO BE FIXED:', len(ids_to_be_fixed))
     for c_id,address in ids_to_be_fixed.items():
+        print(c_id, ' - ', address)
         try:
             coordinates = Geocoder.geocode_addresses_google(address, Hidden.google_api_key)
         except:
@@ -106,7 +117,7 @@ def main():
     # STEP 2
     #geocode_address_database(connector, 'Yang')
     # STEP 3
-    #fix_broken_addresses(connector, 'Trump')
+    fix_broken_addresses(connector, 'Yang')
     connector.commit()
 
 
