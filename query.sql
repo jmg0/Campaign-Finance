@@ -1,0 +1,1 @@
+SELECT Yang_Contributions_compressed.Contribution, Yang_Contributions_compressed.Num_Contributions, Yang_Addresses.Latitude, Yang_Addresses.Longitude FROM Yang_Contributions_compressed JOIN Yang_Addresses ON Yang_Contributions_compressed.Contributor_id = Yang_Addresses.Contributor_id;
