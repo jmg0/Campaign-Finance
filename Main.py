@@ -15,15 +15,15 @@ def main():
     #     Analysis.candidate_database_populate(connector, cursor, candidate)
     #     connector.commit()
     #     cursor.close()
-    cursor = connector.cursor()
-    Analysis.candidate_database_populate(connector, cursor, 'Yang')
-    connector.commit()
-    cursor.close()
+    # cursor = connector.cursor()
+    # Analysis.candidate_database_populate(connector, cursor, 'Yang')
+    # connector.commit()
+    # cursor.close()
 
     # STEP 2
     # correct any broken contributor ids
     # cursor = connector.cursor()
-    # Analysis.fix_cont_id(connector, cursor, 'Sanders')
+    # Analysis.fix_cont_id(connector, cursor, 'Yang')
     # connector.commit()
     # cursor.close()
 
@@ -35,10 +35,10 @@ def main():
     #     Analysis.candidate_database_compress(connector, cursor, candidate)
     #     connector.commit()
     #     cursor.close()
-    # cursor = connector.cursor()
-    # Analysis.candidate_database_compress(connector, cursor, 'Trump')
-    # connector.commit()
-    # connector.close()
+    cursor = connector.cursor()
+    Analysis.candidate_database_compress(connector, cursor, 'Yang')
+    connector.commit()
+    connector.close()
 
 
 if __name__  == '__main__':
