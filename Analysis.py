@@ -24,7 +24,7 @@ def candidate_database_populate(connector, cursor, candidate_name):
         start = 0
 
     contributor_id = 0
-    contributor_ids = list()
+    contributor_ids = [0]
 
     cursor.execute('SELECT max(Contributor_id) FROM ' + relation_name)
     max_cont_id = 0
@@ -55,7 +55,11 @@ def candidate_database_populate(connector, cursor, candidate_name):
                     max_cont_id = max(contributor_ids)
                 contributor_id = max_cont_id + 1
         except:
-            contributor_id += 1
+            if max_cont_id is None:
+                max_cont_id = 0
+            if max(contributor_ids) > max_cont_id:
+                max_cont_id = max(contributor_ids)
+            contributor_id = max_cont_id + 1
 
         if contributor_id not in contributor_ids:
             contributor_ids.append(contributor_id)

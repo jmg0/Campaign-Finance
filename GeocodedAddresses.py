@@ -117,7 +117,7 @@ def main():
     # STEP 2
     #geocode_address_database(connector, 'Yang')
     # STEP 3
-    fix_broken_addresses(connector, 'Yang')
+    #fix_broken_addresses(connector, 'Yang')
     connector.commit()
 
 
