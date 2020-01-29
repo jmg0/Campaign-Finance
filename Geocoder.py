@@ -49,9 +49,6 @@ def geocode_addresses_locationIQ(address, key):
     lng = float(response[0]['lon'])
     return [lat, lng]
 
-def geocode_addresses_arcgis(address):
-    geocode(address)
-
 
 def geocode_database(database_name, candidate_name):
     try:
@@ -94,7 +91,6 @@ def geocode_database(database_name, candidate_name):
         contributor_id = row[0]
         contribution = row[1]
         address = row[2]
-        # coordinates = list() # will = geocode_XX(address) method and return [lat, lng]
         try:
             coordinates = geocode_addresses_osm(address)
         except:
@@ -108,10 +104,8 @@ def geocode_database(database_name, candidate_name):
         cursor.execute(insert_entry_query, ( contributor_id, contribution, lat, lng ) )
         if contributor_id % 25 == 0:
             connector.commit()
-
     connector.commit()
     cursor.close()
     connector.close()
-
     return
 

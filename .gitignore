@@ -9,4 +9,5 @@
 Hidden.py
 *.csv
 *.json
-*.sql
+queryTEST.sql
+DataTesting.py

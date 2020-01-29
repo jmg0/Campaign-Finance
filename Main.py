@@ -10,35 +10,26 @@ def main():
 
     # STEP 1
     # transfer all contribution data into RDB
-    # for candidate in candidate_names:
-    #     cursor = connector.cursor()
-    #     Analysis.candidate_database_populate(connector, cursor, candidate)
-    #     connector.commit()
-    #     cursor.close()
-    # cursor = connector.cursor()
-    # Analysis.candidate_database_populate(connector, cursor, 'Yang')
-    # connector.commit()
-    # cursor.close()
+    for candidate in candidate_names:
+        cursor = connector.cursor()
+        Analysis.candidate_database_populate(connector, cursor, candidate)
+        connector.commit()
+        cursor.close()
 
     # STEP 2
     # correct any broken contributor ids
-    # cursor = connector.cursor()
-    # Analysis.fix_cont_id(connector, cursor, 'Yang')
-    # connector.commit()
-    # cursor.close()
-
+    cursor = connector.cursor()
+    Analysis.fix_cont_id(connector, cursor, 'Yang')
+    connector.commit()
+    cursor.close()
 
     # STEP 3
     # compress contribution data into single entry per person per address
-    # for candidate in candidate_names:
-    #     cursor = connector.cursor()
-    #     Analysis.candidate_database_compress(connector, cursor, candidate)
-    #     connector.commit()
-    #     cursor.close()
-    cursor = connector.cursor()
-    Analysis.candidate_database_compress(connector, cursor, 'Yang')
-    connector.commit()
-    connector.close()
+    for candidate in candidate_names:
+        cursor = connector.cursor()
+        Analysis.candidate_database_compress(connector, cursor, candidate)
+        connector.commit()
+        cursor.close()
 
 
 if __name__  == '__main__':
