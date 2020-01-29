@@ -1,3 +1,1 @@
 # Campaign Finance
-
-IN PROGRESS
